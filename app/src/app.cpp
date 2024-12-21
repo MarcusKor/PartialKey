@@ -9,6 +9,7 @@
 #include <ctime>
 #include <cassert>
 
+#pragma warning (disable: 4242 4365 4810 4820 4514 5045)
 using namespace std;
 using namespace VS3::CodeFactory::Cryptography;
 

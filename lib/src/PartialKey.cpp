@@ -12,8 +12,6 @@
 #include <Base32.h>
 #include <algorithm>
 
-#pragma warning(disable: 5045)
-
 using namespace VS3::CodeFactory::Cryptography;
 using namespace VS3::CodeFactory::Cryptography::Checksum;
 using namespace VS3::CodeFactory::Cryptography::Hash;
@@ -60,6 +58,7 @@ std::string PartialKey::Generate(uint32_t seed)
     return result;
 }
 
+std::string PartialKey::Generate(std::string& seed)
 {
     std::vector<uint8_t> bytes(seed.size());
     std::memcpy(bytes.data(), seed.data(), seed.size());
@@ -235,6 +234,7 @@ bool VS3::CodeFactory::Cryptography::PartialKey::ValidateKey(ChecksumMode checks
     return ValidateKey(checksum.get(), hash.get(), key, seed, subkeyIndex, subkeyBase);
 }
 
+bool PartialKey::ValidateKey(Checksum::IChecksum16* checksum, Hash::IHash* hash, std::vector<uint8_t>& key, uint32_t seed, int32_t subkeyIndex, uint32_t subkeyBase)
 {
     if (!ValidateChecksum(std::move(checksum), key))
         return false;
@@ -252,6 +252,7 @@ bool VS3::CodeFactory::Cryptography::PartialKey::ValidateKey(ChecksumMode checks
     return expected == subkey;
 }
 
+bool PartialKey::ValidateChecksum(Checksum::IChecksum16* checksum, std::vector<uint8_t>& key)
 {
     std::vector<uint8_t> keyBytes;
     uint16_t sum = *reinterpret_cast<uint16_t*> (key.data() + key.size() - 2);
@@ -259,11 +260,13 @@ bool VS3::CodeFactory::Cryptography::PartialKey::ValidateKey(ChecksumMode checks
     return sum == checksum->Compute(keyBytes);
 }
 
+uint32_t PartialKey::GetSerialNumberFromKey(std::string& key)
 {
     std::vector<uint8_t> bytes = GetKeyBytes(key);
     return *reinterpret_cast<uint32_t*>(bytes.data());
 }
 
+uint32_t PartialKey::GetSerialNumberFromSeed(std::string& seed, HashMode hashMode, uint32_t seedOfJenkins06)
 {
     std::unique_ptr<Hash::IHash> hash;
 
@@ -300,6 +303,7 @@ bool VS3::CodeFactory::Cryptography::PartialKey::ValidateKey(ChecksumMode checks
     return hash->Compute(buf);
 }
 
+std::vector<uint8_t> PartialKey::GetKeyBytes(std::string& key)
 {
     key = ToUpperInvariant(key);
     size_t pos = key.find('-');

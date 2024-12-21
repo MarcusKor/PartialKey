@@ -10,7 +10,7 @@
 #include <vector>
 #include <map>
 
-#pragma warning(disable: 4625 4626)
+#pragma warning (disable: 4365 4810 4820 4514 4625 4626 5045)
 #pragma pack(show)
 
 namespace VS3 {
