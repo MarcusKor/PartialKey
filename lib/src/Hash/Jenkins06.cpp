@@ -2,39 +2,39 @@
 
 #pragma warning(disable: 5045)
 
-uint32_t VS3::CodeFactory::Cryptography::Hash::Jenkins06::Compute(std::vector<uint8_t>* data)
+uint32_t VS3::CodeFactory::Cryptography::Hash::Jenkins06::Compute(std::vector<uint8_t>* bytes)
 {
-	if (data == nullptr)
-		throw std::invalid_argument("The argument data is null.");
-	return Compute(*data);
+	if (bytes == nullptr)
+		throw std::invalid_argument("The argument bytes is null.");
+	return Compute(*bytes);
 }
 
-uint32_t VS3::CodeFactory::Cryptography::Hash::Jenkins06::Compute(std::vector<uint8_t>& data)
+uint32_t VS3::CodeFactory::Cryptography::Hash::Jenkins06::Compute(std::vector<uint8_t>& bytes)
 {
-	if (data.empty())
-		throw std::invalid_argument("The argument data is null.");
+	if (bytes.empty())
+		throw std::invalid_argument("The argument bytes is null.");
 
     // internal state
     uint32_t a, b, c;
-    uint32_t i = 0, len = ToUint32(data.size());
+    uint32_t i = 0, len = ToUint32(bytes.size());
     // Set up the internal state
     a = b = c = 0xdeadbeef + len + m_seed;
 
     // All but the last block: affect some 32 bits of (a,b,c)
-    while (12 < len)
+    while (len > 12)
     {
-        a += data[i++];
-        a += static_cast<uint32_t>(data[i++]) << 8;
-        a += static_cast<uint32_t>(data[i++]) << 16;
-        a += static_cast<uint32_t>(data[i++]) << 24;
-        b += data[i++];
-        b += static_cast<uint32_t>(data[i++]) << 8;
-        b += static_cast<uint32_t>(data[i++]) << 16;
-        b += static_cast<uint32_t>(data[i++]) << 24;
-        c += data[i++];
-        c += static_cast<uint32_t>(data[i++]) << 8;
-        c += static_cast<uint32_t>(data[i++]) << 16;
-        c += static_cast<uint32_t>(data[i++]) << 24;
+        a += static_cast<uint32_t>(bytes[i++]);
+        a += static_cast<uint32_t>(bytes[i++]) << 8;
+        a += static_cast<uint32_t>(bytes[i++]) << 16;
+        a += static_cast<uint32_t>(bytes[i++]) << 24;
+        b += static_cast<uint32_t>(bytes[i++]);
+        b += static_cast<uint32_t>(bytes[i++]) << 8;
+        b += static_cast<uint32_t>(bytes[i++]) << 16;
+        b += static_cast<uint32_t>(bytes[i++]) << 24;
+        c += static_cast<uint32_t>(bytes[i++]);
+        c += static_cast<uint32_t>(bytes[i++]) << 8;
+        c += static_cast<uint32_t>(bytes[i++]) << 16;
+        c += static_cast<uint32_t>(bytes[i++]) << 24;
         Mix(a, b, c);
         len -= 12;
     }
@@ -44,40 +44,40 @@ uint32_t VS3::CodeFactory::Cryptography::Hash::Jenkins06::Compute(std::vector<ui
     switch (len) 
     {
     case 12:
-        c += ((uint32_t)data[i++]) << 24;
+        c += (static_cast<uint32_t>(bytes[i++])) << 24;
         [[fallthrough]];
     case 11:
-        c += ((uint32_t)data[i++]) << 16;
+        c += (static_cast<uint32_t>(bytes[i++])) << 16;
         [[fallthrough]];
     case 10:
-        c += ((uint32_t)data[i++]) << 8;
+        c += (static_cast<uint32_t>(bytes[i++])) << 8;
         [[fallthrough]];
     case 9:
-        c += data[i++];
+        c += static_cast<uint32_t>(bytes[i++]);
         [[fallthrough]];
     case 8:
-        b += ((uint32_t)data[i++]) << 24;
+        b += (static_cast<uint32_t>(bytes[i++])) << 24;
         [[fallthrough]];
     case 7:
-        b += ((uint32_t)data[i++]) << 16;
+        b += (static_cast<uint32_t>(bytes[i++])) << 16;
         [[fallthrough]];
     case 6:
-        b += ((uint32_t)data[i++]) << 8;
+        b += (static_cast<uint32_t>(bytes[i++])) << 8;
         [[fallthrough]];
     case 5:
-        b += data[i++];
+        b += static_cast<uint32_t>(bytes[i++]);
         [[fallthrough]];
     case 4:
-        a += ((uint32_t)data[i++]) << 24;
+        a += (static_cast<uint32_t>(bytes[i++])) << 24;
         [[fallthrough]];
     case 3:
-        a += ((uint32_t)data[i++]) << 16;
+        a += (static_cast<uint32_t>(bytes[i++])) << 16;
         [[fallthrough]];
     case 2:
-        a += ((uint32_t)data[i++]) << 8;
+        a += (static_cast<uint32_t>(bytes[i++])) << 8;
         [[fallthrough]];
     case 1:
-        a += data[i];
+        a += static_cast<uint32_t>(bytes[i++]);
         break;
     case 0:
         return c;

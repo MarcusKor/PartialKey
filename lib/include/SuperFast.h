@@ -13,8 +13,8 @@ namespace VS3 {
                 class SuperFast : public IHash
                 {
                 public:
-                    virtual uint32_t Compute(std::vector<uint8_t>* data);
-                    virtual uint32_t Compute(std::vector<uint8_t>& data);
+                    virtual uint32_t Compute(std::vector<uint8_t>* bytes);
+                    virtual uint32_t Compute(std::vector<uint8_t>& bytes);
                 };
             }
         }

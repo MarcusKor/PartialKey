@@ -38,7 +38,7 @@ namespace VS3 {
                 };
 
                 std::string Generate(uint32_t seed);
-                std::string Generate(std::string& seed);
+                std::string Generate(std::string& seed, HashMode hashMode = HashMode::Fnv1A, uint32_t seedOfJenkins06 = 0);
                 std::map<uint32_t, std::string> Generate(uint32_t numberOfKeys, uint32_t randomSeed);
                 bool ValidateKey(ChecksumMode checksumMode, HashMode hashMode, std::string& key, int32_t subkeyIndex, uint32_t subkeyBase, uint32_t seedOfJenkins06 = 0);
                 bool ValidateKey(ChecksumMode checksumMode, HashMode hashMode, std::string& key, int32_t subkeyIndex, uint32_t subkeyBase, std::string& seedString, uint32_t seedOfJenkins06 = 0);

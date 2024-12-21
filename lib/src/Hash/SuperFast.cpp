@@ -1,27 +1,27 @@
 #include <SuperFast.h>
 
-uint32_t VS3::CodeFactory::Cryptography::Hash::SuperFast::Compute(std::vector<uint8_t>* data)
+uint32_t VS3::CodeFactory::Cryptography::Hash::SuperFast::Compute(std::vector<uint8_t>* bytes)
 {
-	if (data == nullptr)
+	if (bytes == nullptr)
 		throw std::invalid_argument("The argument data is null.");
-	return Compute(*data);
+	return Compute(*bytes);
 }
 
-uint32_t VS3::CodeFactory::Cryptography::Hash::SuperFast::Compute(std::vector<uint8_t>& data)
+uint32_t VS3::CodeFactory::Cryptography::Hash::SuperFast::Compute(std::vector<uint8_t>& bytes)
 {
-	if (data.empty())
+	if (bytes.empty())
 		throw std::invalid_argument("The argument data is null.");
 
-    size_t len = data.size(), rem = len & 3;
-    uint32_t i = 0, result = (uint32_t)len;
+    size_t len = bytes.size(), rem = len & 3;
+    uint32_t i = 0, result = ToUint32(len);
     len >>= 2;
 
     // Main loop
     for (; len > 0; len--)
     {
-        result += *reinterpret_cast<uint16_t*>(data.at(i));
+        result += *reinterpret_cast<uint16_t*>(bytes.data() + i);
         i += 2;
-        uint16_t next = *reinterpret_cast<uint16_t*>(data.at(i));
+        uint16_t next = *reinterpret_cast<uint16_t*>(bytes.data() + i);
         i += 2;
         uint32_t tmp = (uint32_t)(next << 11) ^ result;
         result = (result << 16) ^ tmp;
@@ -33,23 +33,23 @@ uint32_t VS3::CodeFactory::Cryptography::Hash::SuperFast::Compute(std::vector<ui
     {
     case 3:
         {
-            result += *reinterpret_cast<uint16_t*>(data.at(i));
+            result += *reinterpret_cast<uint16_t*>(bytes.data() + i);
             i += 2;
             result ^= result << 16;
-            result ^= (uint32_t)(data[i] << 18);
+            result ^= (uint32_t)(bytes[i] << 18);
             result += result >> 11;
         }
         break;
     case 2:
         {
-            result += *reinterpret_cast<uint16_t*>(data.at(i));
+            result += *reinterpret_cast<uint16_t*>(bytes.data() + i);
             result ^= result << 11;
             result += result >> 17;
         }
         break;
     case 1:
         {
-            result += data[i];
+            result += bytes[i];
             result ^= result << 10;
             result += result >> 1;
         }
@@ -63,5 +63,5 @@ uint32_t VS3::CodeFactory::Cryptography::Hash::SuperFast::Compute(std::vector<ui
     result += result >> 17;
     result ^= result << 25;
     result += result >> 6;
-    return 0;
+    return result;
 }

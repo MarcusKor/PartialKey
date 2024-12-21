@@ -58,12 +58,39 @@ std::string PartialKey::Generate(uint32_t seed)
     return result;
 }
 
-std::string PartialKey::Generate(std::string& seed)
+std::string PartialKey::Generate(std::string& seed, HashMode hashMode, uint32_t seedOfJenkins06)
 {
+    std::unique_ptr<Hash::IHash> hash;
     std::vector<uint8_t> bytes(seed.size());
     std::memcpy(bytes.data(), seed.data(), seed.size());
-    std::unique_ptr<Hash::Fnv1A> pk(new Hash::Fnv1A());
-    return Generate(pk->Compute(bytes));
+
+    switch (hashMode)
+    {
+    default:
+    case Fnv1A:
+        hash.reset(new Hash::Fnv1A());
+        break;
+    case Jenkins06:
+        hash.reset(new Hash::Jenkins06(seedOfJenkins06));
+        break;
+    case Jenkins96:
+        hash.reset(new Hash::Jenkins96());
+        break;
+    case OneAtATime:
+        hash.reset(new Hash::OneAtATime());
+        break;
+    case SuperFast:
+        hash.reset(new Hash::SuperFast());
+        break;
+    case Crc32:
+        hash.reset(new Hash::Crc32());
+        break;
+    case GeneralizedCrc:
+        hash.reset(new Hash::GeneralizedCrc());
+        break;
+    }
+
+    return Generate(hash->Compute(bytes));
 }
 
 std::map<uint32_t, std::string> PartialKey::Generate(uint32_t numberOfKeys, uint32_t randomSeed)
@@ -227,6 +254,7 @@ bool VS3::CodeFactory::Cryptography::PartialKey::ValidateKey(ChecksumMode checks
         std::vector<uint8_t> buf(seedString.size());
         std::memcpy(buf.data(), seedString.data(), seedString.size());
 
+        auto v = hash->Compute(buf);
         if (hash->Compute(buf) != seed)
             return false;
     }
