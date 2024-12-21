@@ -60,7 +60,6 @@ std::string PartialKey::Generate(uint32_t seed)
     return result;
 }
 
-std::string PartialKey::Generate(std::string& seed)
 {
     std::vector<uint8_t> bytes(seed.size());
     std::memcpy(bytes.data(), seed.data(), seed.size());
@@ -236,7 +235,6 @@ bool VS3::CodeFactory::Cryptography::PartialKey::ValidateKey(ChecksumMode checks
     return ValidateKey(checksum.get(), hash.get(), key, seed, subkeyIndex, subkeyBase);
 }
 
-bool VS3::CodeFactory::Cryptography::PartialKey::ValidateKey(Checksum::IChecksum16* checksum, Hash::IHash* hash, std::vector<uint8_t>& key, uint32_t seed, int32_t subkeyIndex, uint32_t subkeyBase)
 {
     if (!ValidateChecksum(std::move(checksum), key))
         return false;
@@ -254,7 +252,6 @@ bool VS3::CodeFactory::Cryptography::PartialKey::ValidateKey(Checksum::IChecksum
     return expected == subkey;
 }
 
-bool VS3::CodeFactory::Cryptography::PartialKey::ValidateChecksum(Checksum::IChecksum16* checksum, std::vector<uint8_t>& key)
 {
     std::vector<uint8_t> keyBytes;
     uint16_t sum = *reinterpret_cast<uint16_t*> (key.data() + key.size() - 2);
@@ -262,13 +259,11 @@ bool VS3::CodeFactory::Cryptography::PartialKey::ValidateChecksum(Checksum::IChe
     return sum == checksum->Compute(keyBytes);
 }
 
-uint32_t VS3::CodeFactory::Cryptography::PartialKey::GetSerialNumberFromKey(std::string& key)
 {
     std::vector<uint8_t> bytes = GetKeyBytes(key);
     return *reinterpret_cast<uint32_t*>(bytes.data());
 }
 
-uint32_t VS3::CodeFactory::Cryptography::PartialKey::GetSerialNumberFromSeed(std::string& seed, HashMode hashMode, uint32_t seedOfJenkins06)
 {
     std::unique_ptr<Hash::IHash> hash;
 
@@ -305,7 +300,6 @@ uint32_t VS3::CodeFactory::Cryptography::PartialKey::GetSerialNumberFromSeed(std
     return hash->Compute(buf);
 }
 
-std::vector<uint8_t> VS3::CodeFactory::Cryptography::PartialKey::GetKeyBytes(std::string& key)
 {
     key = ToUpperInvariant(key);
     size_t pos = key.find('-');
